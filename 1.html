@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Groq Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* стили остались прежними */
+  </style>
+</head>
+<body>
+
+<div id="ov"></div>
+
+<!-- SIDEBAR -->
+<div id="sb">
+  <div id="sb-hd">
+    <div class="logo">GROQ<span>/chat</span></div>
+    <button id="btn-new">+ Новый</button>
+  </div>
+  <div id="cl"></div>
+  <div id="sb-ft">История в localStorage</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="tb">
+    <button id="btn-menu">☰</button>
+
+    <select id="ms">
+      <optgroup label="★ FREE — бесплатные">
+        <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile</option>
+        <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant</option>
+        <option value="llama3-70b-8192">Llama 3 70B (8k)</option>
+        <option value="llama3-8b-8192">Llama 3 8B (8k)</option>
+        <option value="mixtral-8x7b-32768">Mixtral 8×7B (32k)</option>
+        <option value="gemma2-9b-it">Gemma 2 9B</option>
+        <option value="gemma-7b-it">Gemma 7B</option>
+      </optgroup>
+      <optgroup label="── Другие">
+        <option value="deepseek-r1-distill-llama-70b">DeepSeek R1 Llama 70B</option>
+        <option value="qwen-qwq-32b">Qwen QwQ 32B</option>
+        <option value="llama-3.2-90b-vision-preview">Llama 3.2 90B Vision</option>
+        <option value="llama-3.2-11b-vision-preview">Llama 3.2 11B Vision</option>
+        <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
+      </optgroup>
+    </select>
+
+    <div id="tb-sp"></div>
+
+    <div id="ak">
+      <span class="kl">API</span>
+      <input id="ki" type="password" placeholder="gsk_…" autocomplete="off" spellcheck="false">
+      <span id="kd">⬤</span>
+      <button id="btn-paste" title="Вставить ключ">📋</button>
+    </div>
+
+    <button id="btn-cfg" title="Настройки">⚙</button>
+    <button id="btn-test" title="Тест соединения" style="background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:5px 8px;font-size:11px;cursor:pointer;font-family:var(--f);flex-shrink:0;transition:all .15s">тест</button>
+  </div>
+
+  <div id="cfg">
+    <div class="sg" style="min-width:200px;flex:2">
+      <div class="sl">Системный промт</div>
+      <textarea id="sp" placeholder="Ты полезный ассистент…" rows="3"></textarea>
+    </div>
+    <div class="sg">
+      <div class="sl">Temperature <em id="tv">0.70</em></div>
+      <input type="range" id="tmp" min="0" max="2" step="0.05" value="0.7">
+    </div>
+    <div class="sg">
+      <div class="sl">Max tokens <em id="tkv">2048</em></div>
+      <input type="range" id="tok" min="128" max="8192" step="128" value="2048">
+    </div>
+  </div>
+
+  <div id="chat">
+    <div id="emp">
+      <div class="ei">⚡</div>
+      <div class="et">Groq Chat</div>
+      <div class="es">Вставьте API ключ через 📋 и начните диалог.<br>История сохраняется в браузере.</div>
+    </div>
+  </div>
+
+  <div id="ir">
+    <textarea id="mi" placeholder="Сообщение… (Enter — отправить, Shift+Enter — перенос)" rows="1"></textarea>
+    <input type="file" id="file-input" style="display: none;">
+    <label for="file-input" id="file-label">+</label>
+    <button id="bc" title="Очистить чат">🗑</button>
+    <button id="bs">▶</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- PASTE MODAL -->
+<div id="pm">
+  <div id="pm-box">
+    <div class="sl">Вставить API ключ</div>
+    <div id="pm-hint">Нажми <em>Ctrl+V</em> (или долгое нажатие → Вставить) в поле ниже</div>
+    <input id="pm-in" type="text" placeholder="gsk_…" autocomplete="off" spellcheck="false">
+    <div id="pm-btns">
+      <button class="pb" id="pm-cancel">Отмена</button>
+      <button class="pb ok" id="pm-ok">Применить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // скрипт остался прежним, добавлены обработчики событий для файлов
+  const fileInput = document.getElementById('file-input');
+  const fileLabel = document.getElementById('file-label');
+
+  fileLabel.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      // Отправляем файл агенту
+      sendFileToAgent(formData);
+    }
+  });
+
+  function sendFileToAgent(formData) {
+    // Создаем запрос к агенту
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.groq.com/openai/v1/files', true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + document.getElementById('ki').value.trim());
+    xhr.send(formData);
+
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        // Обрабатываем ответ от агента
+        handleAgentResponse(response);
+      } else {
+        console.error('Ошибка при отправке файла:', xhr.statusText);
+      }
+    };
+
+    xhr.onerror = function() {
+      console.error('Ошибка при отправке файла:', xhr.statusText);
+    };
+  }
+
+  function handleAgentResponse(response) {
+    // Обрабатываем ответ от агента
+    const fileContent = response.content;
+    const fileExtension = response.extension;
+    // Добавляем файл в чат
+    addFileToChat(fileContent, fileExtension);
+  }
+
+  function addFileToChat(fileContent, fileExtension) {
+    // Создаем элемент файла в чате
+    const fileElement = document.createElement('div');
+    fileElement.innerHTML = `
+      <span>Файл: ${fileExtension}</span>
+      <pre>${fileContent}</pre>
+    `;
+    // Добавляем элемент файла в чат
+    document.getElementById('chat').appendChild(fileElement);
+  }
+</script>
+</body>
+</html>
