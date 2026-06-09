@@ -18,7 +18,6 @@
 html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--f);font-size:13px}
 body{display:flex}
 
-/* ── SIDEBAR ── */
 #sb{width:var(--sw);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .23s ease;z-index:100;min-height:0}
 #sb-hd{padding:12px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .logo{color:var(--accent);font-weight:700;font-size:14px;letter-spacing:-.5px;flex:1}
@@ -34,10 +33,8 @@ body{display:flex}
 .ci:hover .cd{opacity:1}
 .cd:hover{color:var(--err)!important}
 
-/* ── MAIN ── */
 #main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden;position:relative}
 
-/* ── TOPBAR ── */
 #tb{display:flex;align-items:center;gap:6px;padding:8px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
 #btn-menu{background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:5px 8px;font-size:14px;cursor:pointer;display:none}
 #ms{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:5px 6px;font-family:var(--f);font-size:12px;cursor:pointer;outline:none;max-width:160px;text-overflow:ellipsis}
@@ -49,7 +46,6 @@ body{display:flex}
 #btn-paste, #btn-cfg{background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:5px 7px;font-size:13px;cursor:pointer}
 #btn-cfg.on{border-color:var(--accent);color:var(--accent)}
 
-/* ── SETTINGS ── */
 #cfg{display:none;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px;gap:10px;flex-wrap:wrap}
 #cfg.on{display:flex}
 .sg{display:flex;flex-direction:column;gap:4px;min-width:120px;flex:1}
@@ -59,7 +55,6 @@ input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(-
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent)}
 .sg textarea{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:6px;font-family:var(--f);font-size:12px;resize:none;outline:none}
 
-/* ── CHAT ── */
 #chat{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
 #emp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);text-align:center;padding:20px}
 .msg{display:flex;flex-direction:column;gap:1px;max-width:88%}
@@ -73,14 +68,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .bub pre{background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:8px;overflow-x:auto;margin:4px 0}
 .bub pre code{background:none;border:none;padding:0;color:var(--text)}
 
-/* ── INPUT PANEL (FIXED BOTTOM) ── */
 #ir{padding:8px;border-top:1px solid var(--border);background:var(--bg2);display:flex;gap:6px;align-items:flex-end;flex-shrink:0}
 #mi{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:8px 10px;font-family:var(--f);font-size:13px;resize:none;outline:none;line-height:1.4;max-height:120px;min-height:36px}
 .ibtn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;height:36px;min-width:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .12s}
 #bs{background:var(--accent);color:var(--bg);font-weight:700;border:none}
 #bs.stop{background:var(--err);color:var(--text)}
 
-/* ── TOAST ── */
 #toast{position:fixed;bottom:65px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:8px 14px;border-radius:6px;font-size:11px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:999;max-width:90vw;text-align:center}
 #toast.on{opacity:1}
 #toast.err{border-color:rgba(255,85,85,.5);color:var(--err)}
@@ -88,7 +81,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 
 #ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
 
-/* ── MOBILE ADAPTATION ── */
 @media(max-width:640px){
   #sb{position:fixed;top:0;left:0;bottom:0;transform:translateX(-100%)}
   #sb.on{transform:translateX(0)}
@@ -117,9 +109,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
     <button id="btn-menu">☰</button>
     <select id="ms"></select>
     <button id="btn-limits" title="Показать лимиты модели">📊</button>
-
     <div style="flex:1"></div>
-
     <div id="ak">
       <span class="kl" style="color:var(--text3);font-size:10px">KEY</span>
       <input id="ki" type="password" placeholder="gsk_…" autocomplete="off">
@@ -164,7 +154,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 <script>
 'use strict';
 
-// Список строго бесплатных и актуальных моделей Groq
 var FREE_MODELS = [
   {id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B'},
   {id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B'},
@@ -173,11 +162,10 @@ var FREE_MODELS = [
 ];
 
 var convs = [], curId = null, busy = false, xhr = null;
-var limitsCache = {}; // Хранилище заголовков лимитов по моделям
+var limitsCache = {};
 
-var $sb=$document.getElementById('sb'), $ov=$document.getElementById('ov'), $cl=$document.getElementById('cl'), $chat=$document.getElementById('chat'), $emp=$document.getElementById('emp'), $mi=$document.getElementById('mi'), $bs=$document.getElementById('bs'), $bc=$document.getElementById('bc'), $ms=$document.getElementById('ms'), $sp=$document.getElementById('sp'), $tmp=$document.getElementById('tmp'), $tok=$document.getElementById('tok'), $tv=$document.getElementById('tv'), $tkv=$document.getElementById('tkv'), $ki=$document.getElementById('ki'), $ak=$document.getElementById('ak'), $toast=$document.getElementById('toast'), $cfg=$document.getElementById('cfg'), $btnCfg=$document.getElementById('btn-cfg'), $btnNew=$document.getElementById('btn-new'), $btnMenu=$document.getElementById('btn-menu'), $btnPaste=$document.getElementById('btn-paste'), $btnFile=$document.getElementById('btn-file'), $fIn=$document.getElementById('f-in'), $btnLimits=$document.getElementById('btn-limits');
+var $sb=document.getElementById('sb'), $ov=document.getElementById('ov'), $cl=document.getElementById('cl'), $chat=document.getElementById('chat'), $emp=document.getElementById('emp'), $mi=document.getElementById('mi'), $bs=document.getElementById('bs'), $bc=document.getElementById('bc'), $ms=document.getElementById('ms'), $sp=document.getElementById('sp'), $tmp=document.getElementById('tmp'), $tok=document.getElementById('tok'), $tv=document.getElementById('tv'), $tkv=document.getElementById('tkv'), $ki=document.getElementById('ki'), $ak=document.getElementById('ak'), $toast=document.getElementById('toast'), $cfg=document.getElementById('cfg'), $btnCfg=document.getElementById('btn-cfg'), $btnNew=document.getElementById('btn-new'), $btnMenu=document.getElementById('btn-menu'), $btnPaste=document.getElementById('btn-paste'), $btnFile=document.getElementById('btn-file'), $fIn=document.getElementById('f-in'), $btnLimits=document.getElementById('btn-limits');
 
-// Инициализация селектора моделей
 FREE_MODELS.forEach(function(m){
   var opt = document.createElement('option');
   opt.value = m.id; opt.textContent = m.name;
@@ -216,12 +204,8 @@ function updKey() {
 $ki.addEventListener('input', function(){ updKey(); try{localStorage.setItem('gq_free_api_key', $ki.value.trim());}catch(e){} });
 
 $btnPaste.addEventListener('click', function(){
-  navigator.clipboard.readText().then(function(t){
-    if(t){ $ki.value = t.trim(); updKey(); $ki.dispatchEvent(new Event('input')); toast('Ключ вставлен ✓', 'ok'); }
-  }).catch(function(){
-    var p = prompt('Вставьте API ключ сюда:');
-    if(p){ $ki.value = p.trim(); updKey(); $ki.dispatchEvent(new Event('input')); }
-  });
+  var p = prompt('Вставьте API ключ (gsk_...):');
+  if(p){ $ki.value = p.trim(); updKey(); try{localStorage.setItem('gq_free_api_key', $ki.value.trim());}catch(e){} toast('Ключ обновлен ✓', 'ok'); }
 });
 
 $btnCfg.addEventListener('click', function(){ $cfg.classList.toggle('on'); $btnCfg.classList.toggle('on'); });
@@ -232,7 +216,6 @@ $sp.addEventListener('input', save);
 $btnMenu.addEventListener('click', function(){ $sb.classList.toggle('on'); $ov.classList.toggle('on'); });
 $ov.addEventListener('click', function(){ $sb.classList.remove('on'); $ov.classList.remove('on'); });
 
-// ОБРАБОТКА ФАЙЛОВ
 $btnFile.addEventListener('click', function(){ $fIn.click(); });
 $fIn.addEventListener('change', function(e){
   var files = e.target.files; if(!files.length) return;
@@ -245,7 +228,7 @@ $fIn.addEventListener('change', function(e){
         $mi.value += ($mi.value ? '\n' : '') + '[File: ' + f.name + ']\n' + txt + '\n[End of ' + f.name + ']\n';
         $mi.dispatchEvent(new Event('input'));
         loaded++;
-        if(loaded === files.length) toast('Файлы загружены в текстовое поле ('+loaded+')', 'ok');
+        if(loaded === files.length) toast('Загружено файлов: '+loaded, 'ok');
       };
       r.readAsText(f);
     })(files[i]);
@@ -253,18 +236,13 @@ $fIn.addEventListener('change', function(e){
   $fIn.value = '';
 });
 
-// ПРОСМОТР ЛИМИТОВ (ONE TAP)
 $btnLimits.addEventListener('click', function(){
   var m = $ms.value;
   var l = limitsCache[m];
-  if(!l) {
-    toast('Нет данных. Сделайте хотя бы один запрос для этой модели.', 'err');
-    return;
-  }
-  var msg = 'Модель: ' + m + '\n' +
-            'Запросы (остаток): ' + (l.reqRem || '?') + ' / ' + (l.reqLimit || '?') + ' (сброс через ' + (l.reqReset || '?') + ')\n' +
-            'Токены (остаток): ' + (l.tokRem || '?') + ' / ' + (l.tokLimit || '?') + ' (сброс через ' + (l.tokReset || '?') + ')';
-  alert(msg);
+  if(!l) { toast('Запросов еще не было. Лимиты не считаны.', 'err'); return; }
+  alert('Модель: ' + m + '\n\n' +
+        'Запросы: ' + l.reqRem + ' / ' + l.reqLimit + ' (сброс через ' + l.reqReset + ')\n' +
+        'Токены: ' + l.tokRem + ' / ' + l.tokLimit + ' (сброс через ' + l.tokReset + ')');
 });
 
 function parseLimits(h, modelId) {
@@ -281,7 +259,6 @@ function parseLimits(h, modelId) {
   }
 }
 
-// УПРАВЛЕНИЕ ЧАТАМИ
 function newConv() {
   var id = 'c' + Date.now();
   convs.unshift({ id:id, title:'Новый чат', msgs:[] }); curId = id;
@@ -347,7 +324,6 @@ function toast(m, type) {
   toastT = setTimeout(function(){ $toast.className = ''; }, 3500);
 }
 
-// ОТПРАВКА
 $mi.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); } });
 $bs.addEventListener('click', function(){ if(busy) stopReq(); else sendMsg(); });
 
@@ -397,7 +373,7 @@ function sendMsg() {
   };
   
   xhr.onerror = function() {
-    ab.innerHTML = '<span style="color:var(--err)">❌ Ошибка сети/CORS. Запусти через локальный сервер (python -m http.server).</span>';
+    ab.innerHTML = '<span style="color:var(--err)">❌ Ошибка сети/CORS. Запусти через локальный сервер или используй GitHub Pages (https).</span>';
     done();
   };
   
@@ -409,7 +385,6 @@ function sendMsg() {
 
 function done() { busy = false; xhr = null; $bs.textContent = '▶'; $bs.classList.remove('stop'); }
 
-// INIT
 load(); updKey();
 if(!convs.length) newConv(); else { renderCL(); renderChat(); }
 </script>
