@@ -246,16 +246,24 @@ $btnLimits.addEventListener('click', function(){
 });
 
 function parseLimits(h, modelId) {
+  // Выводим в консоль все заголовки, чтобы увидеть, что именно долетает
+  console.log("Все заголовки:", h.getAllResponseHeaders());
+  
   var get = function(p){ return h.getResponseHeader(p); };
-  if(get('x-ratelimit-remaining-requests')) {
+  
+  // Проверяем, есть ли хоть что-то
+  var rem = get('x-ratelimit-remaining-requests');
+  if(rem) {
     limitsCache[modelId] = {
       reqLimit: get('x-ratelimit-limit-requests'),
-      reqRem: get('x-ratelimit-remaining-requests'),
+      reqRem: rem,
       reqReset: get('x-ratelimit-reset-requests'),
       tokLimit: get('x-ratelimit-limit-tokens'),
       tokRem: get('x-ratelimit-remaining-tokens'),
       tokReset: get('x-ratelimit-reset-tokens')
     };
+  } else {
+    console.warn("Заголовки лимитов не найдены. CORS может их скрывать.");
   }
 }
 
