@@ -183,6 +183,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 <script>
 'use strict';
 
+// ─── DOM — первым делом, до всех обработчиков ─────────────────────────────
+var $sb=document.getElementById('sb'), $ov=document.getElementById('ov'),
+    $cl=document.getElementById('cl'), $chat=document.getElementById('chat'),
+    $emp=document.getElementById('emp'), $mi=document.getElementById('mi'),
+    $bs=document.getElementById('bs'), $bc=document.getElementById('bc'),
+    $ms=document.getElementById('ms'), $sp=document.getElementById('sp'),
+    $tmp=document.getElementById('tmp'), $tok=document.getElementById('tok'),
+    $tv=document.getElementById('tv'), $tkv=document.getElementById('tkv'),
+    $ki=document.getElementById('ki'), $ak=document.getElementById('ak'),
+    $toast=document.getElementById('toast'), $cfg=document.getElementById('cfg'),
+    $btnCfg=document.getElementById('btn-cfg'), $btnNew=document.getElementById('btn-new'),
+    $btnMenu=document.getElementById('btn-menu'), $btnPaste=document.getElementById('btn-paste'),
+    $btnFile=document.getElementById('btn-file'), $fIn=document.getElementById('f-in'),
+    $btnLimits=document.getElementById('btn-limits'),
+    $ps=document.getElementById('ps'),
+    $btnPresetAdd=document.getElementById('btn-preset-add'),
+    $btnPresetDel=document.getElementById('btn-preset-del'),
+    $attachArea=document.getElementById('attach-area');
+
 // ─── МОДЕЛИ ────────────────────────────────────────────────────────────────
 var FREE_MODELS = [
   {id: 'llama-3.3-70b-versatile',   name: 'Llama 3.3 70B'},
@@ -401,24 +420,6 @@ $fIn.addEventListener('change', function(e) {
 // ─── ОСНОВНЫЕ ПЕРЕМЕННЫЕ ───────────────────────────────────────────────────
 var convs = [], curId = null, busy = false, xhr = null;
 var limitsCache = {};
-
-var $sb=document.getElementById('sb'), $ov=document.getElementById('ov'),
-    $cl=document.getElementById('cl'), $chat=document.getElementById('chat'),
-    $emp=document.getElementById('emp'), $mi=document.getElementById('mi'),
-    $bs=document.getElementById('bs'), $bc=document.getElementById('bc'),
-    $ms=document.getElementById('ms'), $sp=document.getElementById('sp'),
-    $tmp=document.getElementById('tmp'), $tok=document.getElementById('tok'),
-    $tv=document.getElementById('tv'), $tkv=document.getElementById('tkv'),
-    $ki=document.getElementById('ki'), $ak=document.getElementById('ak'),
-    $toast=document.getElementById('toast'), $cfg=document.getElementById('cfg'),
-    $btnCfg=document.getElementById('btn-cfg'), $btnNew=document.getElementById('btn-new'),
-    $btnMenu=document.getElementById('btn-menu'), $btnPaste=document.getElementById('btn-paste'),
-    $btnFile=document.getElementById('btn-file'), $fIn=document.getElementById('f-in'),
-    $btnLimits=document.getElementById('btn-limits'),
-    $ps=document.getElementById('ps'),
-    $btnPresetAdd=document.getElementById('btn-preset-add'),
-    $btnPresetDel=document.getElementById('btn-preset-del'),
-    $attachArea=document.getElementById('attach-area');
 
 FREE_MODELS.forEach(function(m){
   var opt = document.createElement('option');
