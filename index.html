@@ -35,9 +35,17 @@ body{display:flex}
 
 #main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden;position:relative}
 
-#tb{display:flex;align-items:center;gap:6px;padding:8px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0}
+#tb{display:flex;align-items:center;gap:6px;padding:8px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;flex-wrap:wrap}
 #btn-menu{background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:5px 8px;font-size:14px;cursor:pointer;display:none}
 #ms{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:5px 6px;font-family:var(--f);font-size:12px;cursor:pointer;outline:none;max-width:160px;text-overflow:ellipsis}
+/* Пресеты системного промта */
+#preset-wrap{display:flex;align-items:center;gap:4px}
+#ps{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:5px 6px;font-family:var(--f);font-size:12px;cursor:pointer;outline:none;max-width:130px;text-overflow:ellipsis}
+#btn-preset-add{background:var(--adim);border:1px solid rgba(0,229,160,.35);color:var(--accent);border-radius:6px;padding:5px 8px;font-size:13px;font-weight:700;cursor:pointer;line-height:1;transition:all .15s}
+#btn-preset-add:hover{background:var(--accent);color:var(--bg)}
+#btn-preset-del{background:none;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:5px 7px;font-size:12px;cursor:pointer;transition:all .12s}
+#btn-preset-del:hover{border-color:var(--err);color:var(--err)}
+
 #btn-limits{background:var(--bg3);border:1px solid var(--border2);color:var(--accent);border-radius:6px;padding:5px 7px;font-size:12px;cursor:pointer}
 #ak{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:4px 6px}
 #ak.ok{border-color:rgba(0,229,160,.4)}
@@ -68,6 +76,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .bub pre{background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:8px;overflow-x:auto;margin:4px 0}
 .bub pre code{background:none;border:none;padding:0;color:var(--text)}
 
+/* Область прикреплённых файлов над полем ввода */
+#attach-area{display:none;padding:6px 8px;border-top:1px solid var(--border);background:var(--bg2);gap:6px;flex-wrap:wrap}
+#attach-area.has-files{display:flex}
+.att-chip{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border2);border-radius:5px;padding:3px 7px;font-size:11px;color:var(--text2)}
+.att-chip .att-name{color:var(--text);max-width:120px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.att-chip .att-size{color:var(--text3)}
+.att-chip .att-del{cursor:pointer;color:var(--text3);margin-left:2px;font-size:12px}
+.att-chip .att-del:hover{color:var(--err)}
+.att-chip.att-img{border-color:rgba(0,229,160,.3)}
+.att-chip.att-err{border-color:rgba(255,85,85,.3);color:var(--err)}
+
 #ir{padding:8px;border-top:1px solid var(--border);background:var(--bg2);display:flex;gap:6px;align-items:flex-end;flex-shrink:0}
 #mi{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:8px 10px;font-family:var(--f);font-size:13px;resize:none;outline:none;line-height:1.4;max-height:120px;min-height:36px}
 .ibtn{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);border-radius:6px;height:36px;min-width:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .12s}
@@ -89,6 +108,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   .kl{display:none}
   #ki{width:65px}
   #ms{max-width:110px}
+  #ps{max-width:90px}
 }
 </style>
 </head>
@@ -108,6 +128,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   <div id="tb">
     <button id="btn-menu">☰</button>
     <select id="ms"></select>
+    <!-- Пресеты системного промта -->
+    <div id="preset-wrap">
+      <select id="ps" title="Выбрать пресет системного промта"></select>
+      <button id="btn-preset-add" title="Добавить пресет">+</button>
+      <button id="btn-preset-del" title="Удалить выбранный пресет">✕</button>
+    </div>
     <button id="btn-limits" title="Показать лимиты модели">📊</button>
     <div style="flex:1"></div>
     <div id="ak">
@@ -120,7 +146,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 
   <div id="cfg">
     <div class="sg" style="flex:2">
-      <div class="sl">Системный промт</div>
+      <div class="sl">Системный промт <em id="sp-preset-label"></em></div>
       <textarea id="sp" placeholder="Ты полезный ассистент…" rows="2"></textarea>
     </div>
     <div class="sg">
@@ -140,11 +166,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
     </div>
   </div>
 
+  <!-- Прикреплённые файлы показываются здесь, а не в textarea -->
+  <div id="attach-area"></div>
+
   <div id="ir">
-    <input type="file" id="f-in" style="display:none" multiple>
-    <button class="ibtn" id="btn-file" title="Загрузить файл(ы)">📎</button>
+    <input type="file" id="f-in" style="display:none" multiple accept="image/*,text/*,.txt,.md,.json,.csv,.xml,.html,.js,.py,.c,.cpp,.h,.log,.yaml,.yml">
+    <button class="ibtn" id="btn-file" title="Прикрепить файл(ы)">📎</button>
     <textarea id="mi" placeholder="Сообщение… (Enter — отправить)" rows="1"></textarea>
-    <button class="ibtn" id="bc" title="Очистить">🗑</button>
+    <button class="ibtn" id="bc" title="Очистить чат">🗑</button>
     <button class="ibtn" id="bs">▶</button>
   </div>
 </div>
@@ -154,17 +183,242 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 <script>
 'use strict';
 
+// ─── МОДЕЛИ ────────────────────────────────────────────────────────────────
 var FREE_MODELS = [
-  {id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B'},
-  {id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B'},
-  {id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B'},
-  {id: 'gemma2-9b-it', name: 'Gemma 2 9B'}
+  {id: 'llama-3.3-70b-versatile',   name: 'Llama 3.3 70B'},
+  {id: 'llama-3.1-8b-instant',      name: 'Llama 3.1 8B'},
+  {id: 'mixtral-8x7b-32768',        name: 'Mixtral 8x7B'},
+  {id: 'gemma2-9b-it',              name: 'Gemma 2 9B'},
+  {id: 'meta-llama/llama-4-scout-17b-16e-instruct', name: 'Llama 4 Scout 17B'},
+  {id: 'compound-beta',             name: 'Compound Beta'}
 ];
 
+// Модели с поддержкой vision (image input)
+var VISION_MODELS = [
+  'meta-llama/llama-4-scout-17b-16e-instruct',
+  'compound-beta'
+];
+
+// ─── ПРЕСЕТЫ СИСТЕМНОГО ПРОМТА ─────────────────────────────────────────────
+var DEFAULT_PRESETS = [
+  {id: 'default', name: '— нет —', sys: ''},
+  {id: 'assistant', name: 'Ассистент', sys: 'Ты полезный, точный и краткий ассистент. Отвечай по делу.'},
+  {id: 'coder', name: 'Программист', sys: 'Ты опытный разработчик. Пиши чистый, рабочий код с пояснениями. Предпочтительный язык — тот, что в вопросе.'}
+];
+
+var presets = [];
+var curPresetId = 'default';
+
+function loadPresets() {
+  try {
+    var raw = localStorage.getItem('gq_presets');
+    if (raw) presets = JSON.parse(raw);
+    else presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+    var cur = localStorage.getItem('gq_cur_preset');
+    if (cur) curPresetId = cur;
+  } catch(e) {
+    presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+  }
+}
+function savePresets() {
+  try { localStorage.setItem('gq_presets', JSON.stringify(presets)); } catch(e){}
+}
+function renderPresetSelect() {
+  $ps.innerHTML = '';
+  presets.forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = p.name;
+    $ps.appendChild(opt);
+  });
+  $ps.value = curPresetId;
+  // Показываем кнопку удаления только для пользовательских пресетов
+  var found = presets.find(function(p){ return p.id === curPresetId; });
+  var isDefault = DEFAULT_PRESETS.some(function(p){ return p.id === curPresetId; });
+  $btnPresetDel.style.display = (found && !isDefault) ? '' : 'none';
+  if (found) $sp.value = found.sys;
+  var label = document.getElementById('sp-preset-label');
+  label.textContent = found ? '[' + found.name + ']' : '';
+}
+$ps.addEventListener('change', function() {
+  curPresetId = $ps.value;
+  try { localStorage.setItem('gq_cur_preset', curPresetId); } catch(e){}
+  var found = presets.find(function(p){ return p.id === curPresetId; });
+  if (found) $sp.value = found.sys;
+  renderPresetSelect();
+  save();
+});
+
+$btnPresetAdd.addEventListener('click', function() {
+  var name = prompt('Название пресета:');
+  if (!name || !name.trim()) return;
+  var id = 'p' + Date.now();
+  presets.push({ id: id, name: name.trim(), sys: $sp.value });
+  curPresetId = id;
+  savePresets();
+  try { localStorage.setItem('gq_cur_preset', curPresetId); } catch(e){}
+  renderPresetSelect();
+  toast('Пресет "' + name.trim() + '" сохранён ✓', 'ok');
+});
+
+$btnPresetDel.addEventListener('click', function() {
+  var found = presets.find(function(p){ return p.id === curPresetId; });
+  if (!found) return;
+  var isDefault = DEFAULT_PRESETS.some(function(p){ return p.id === curPresetId; });
+  if (isDefault) { toast('Стандартный пресет не удаляется', 'err'); return; }
+  if (!confirm('Удалить пресет "' + found.name + '"?')) return;
+  presets = presets.filter(function(p){ return p.id !== curPresetId; });
+  curPresetId = 'default';
+  savePresets();
+  try { localStorage.setItem('gq_cur_preset', curPresetId); } catch(e){}
+  renderPresetSelect();
+  toast('Пресет удалён', 'ok');
+});
+
+// Сохранение изменённого промта обратно в пресет
+$sp.addEventListener('input', function() {
+  var found = presets.find(function(p){ return p.id === curPresetId; });
+  if (found) found.sys = $sp.value;
+  savePresets();
+  save();
+});
+
+// ─── ФАЙЛЫ (нормальная реализация) ────────────────────────────────────────
+// attachments: [{name, type, text, b64, isImage, sizeHuman}]
+var attachments = [];
+
+var TEXT_TYPES = [
+  'text/', 'application/json', 'application/xml',
+  'application/javascript', 'application/x-yaml'
+];
+var TEXT_EXTS = ['txt','md','json','csv','xml','html','js','ts','py','c','cpp','h',
+                  'java','kt','go','rs','sh','bat','log','yaml','yml','ini','toml','css'];
+
+var MAX_TEXT_CHARS = 6000; // ~1500 токенов с запасом
+
+function isTextFile(file) {
+  if (TEXT_TYPES.some(function(t){ return file.type.startsWith(t); })) return true;
+  var ext = file.name.split('.').pop().toLowerCase();
+  return TEXT_EXTS.indexOf(ext) !== -1;
+}
+function isImageFile(file) {
+  return file.type.startsWith('image/');
+}
+function fmtSize(n) {
+  if (n < 1024) return n + 'B';
+  if (n < 1048576) return (n/1024).toFixed(1) + 'K';
+  return (n/1048576).toFixed(1) + 'M';
+}
+
+function renderAttachArea() {
+  $attachArea.innerHTML = '';
+  if (!attachments.length) {
+    $attachArea.classList.remove('has-files');
+    return;
+  }
+  $attachArea.classList.add('has-files');
+  attachments.forEach(function(a, idx) {
+    var chip = document.createElement('div');
+    chip.className = 'att-chip' + (a.isImage ? ' att-img' : '') + (a.error ? ' att-err' : '');
+    var icon = a.isImage ? '🖼' : (a.error ? '❌' : '📄');
+    chip.innerHTML = '<span>' + icon + '</span>' +
+      '<span class="att-name">' + esc(a.name) + '</span>' +
+      '<span class="att-size">' + a.sizeHuman + (a.truncated ? ' ✂' : '') + '</span>' +
+      '<span class="att-del" data-idx="' + idx + '">✕</span>';
+    $attachArea.appendChild(chip);
+  });
+  $attachArea.querySelectorAll('.att-del').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var i = parseInt(btn.getAttribute('data-idx'));
+      attachments.splice(i, 1);
+      renderAttachArea();
+    });
+  });
+}
+
+$btnFile.addEventListener('click', function(){ $fIn.click(); });
+$fIn.addEventListener('change', function(e) {
+  var files = e.target.files; if (!files.length) return;
+  var pending = files.length, done_count = 0;
+
+  for (var i = 0; i < files.length; i++) {
+    (function(f) {
+      if (isTextFile(f)) {
+        // Текстовые файлы — читаем как текст, усекаем если надо
+        var r = new FileReader();
+        r.onload = function(evt) {
+          var txt = evt.target.result;
+          var truncated = false;
+          if (txt.length > MAX_TEXT_CHARS) {
+            txt = txt.slice(0, MAX_TEXT_CHARS);
+            truncated = true;
+          }
+          attachments.push({
+            name: f.name, type: 'text', text: txt,
+            isImage: false, truncated: truncated,
+            sizeHuman: fmtSize(f.size)
+          });
+          done_count++;
+          if (done_count === pending) { renderAttachArea(); toast('Файлов прикреплено: ' + pending, 'ok'); }
+        };
+        r.onerror = function() {
+          attachments.push({ name: f.name, type: 'error', error: true, isImage: false, sizeHuman: fmtSize(f.size) });
+          done_count++;
+          if (done_count === pending) { renderAttachArea(); }
+        };
+        r.readAsText(f, 'utf-8');
+
+      } else if (isImageFile(f)) {
+        // Изображения — base64, только если модель поддерживает vision
+        var r2 = new FileReader();
+        r2.onload = function(evt) {
+          var b64 = evt.target.result; // data:image/...;base64,...
+          attachments.push({
+            name: f.name, type: 'image', b64: b64,
+            mimeType: f.type, isImage: true, truncated: false,
+            sizeHuman: fmtSize(f.size)
+          });
+          done_count++;
+          if (done_count === pending) {
+            renderAttachArea();
+            var modelVision = VISION_MODELS.indexOf($ms.value) !== -1;
+            if (!modelVision) toast('⚠ Изображения: текущая модель может не поддерживать vision', 'err');
+            else toast('Файлов прикреплено: ' + pending, 'ok');
+          }
+        };
+        r2.readAsDataURL(f);
+
+      } else {
+        // Бинарные файлы — не поддерживаются
+        toast('⚠ Бинарные файлы не поддерживаются: ' + f.name, 'err');
+        done_count++;
+        if (done_count === pending) renderAttachArea();
+      }
+    })(files[i]);
+  }
+  $fIn.value = '';
+});
+
+// ─── ОСНОВНЫЕ ПЕРЕМЕННЫЕ ───────────────────────────────────────────────────
 var convs = [], curId = null, busy = false, xhr = null;
 var limitsCache = {};
 
-var $sb=document.getElementById('sb'), $ov=document.getElementById('ov'), $cl=document.getElementById('cl'), $chat=document.getElementById('chat'), $emp=document.getElementById('emp'), $mi=document.getElementById('mi'), $bs=document.getElementById('bs'), $bc=document.getElementById('bc'), $ms=document.getElementById('ms'), $sp=document.getElementById('sp'), $tmp=document.getElementById('tmp'), $tok=document.getElementById('tok'), $tv=document.getElementById('tv'), $tkv=document.getElementById('tkv'), $ki=document.getElementById('ki'), $ak=document.getElementById('ak'), $toast=document.getElementById('toast'), $cfg=document.getElementById('cfg'), $btnCfg=document.getElementById('btn-cfg'), $btnNew=document.getElementById('btn-new'), $btnMenu=document.getElementById('btn-menu'), $btnPaste=document.getElementById('btn-paste'), $btnFile=document.getElementById('btn-file'), $fIn=document.getElementById('f-in'), $btnLimits=document.getElementById('btn-limits');
+var $sb=document.getElementById('sb'), $ov=document.getElementById('ov'),
+    $cl=document.getElementById('cl'), $chat=document.getElementById('chat'),
+    $emp=document.getElementById('emp'), $mi=document.getElementById('mi'),
+    $bs=document.getElementById('bs'), $bc=document.getElementById('bc'),
+    $ms=document.getElementById('ms'), $sp=document.getElementById('sp'),
+    $tmp=document.getElementById('tmp'), $tok=document.getElementById('tok'),
+    $tv=document.getElementById('tv'), $tkv=document.getElementById('tkv'),
+    $ki=document.getElementById('ki'), $ak=document.getElementById('ak'),
+    $toast=document.getElementById('toast'), $cfg=document.getElementById('cfg'),
+    $btnCfg=document.getElementById('btn-cfg'), $btnNew=document.getElementById('btn-new'),
+    $btnMenu=document.getElementById('btn-menu'), $btnPaste=document.getElementById('btn-paste'),
+    $btnFile=document.getElementById('btn-file'), $fIn=document.getElementById('f-in'),
+    $btnLimits=document.getElementById('btn-limits'),
+    $ps=document.getElementById('ps'),
+    $btnPresetAdd=document.getElementById('btn-preset-add'),
+    $btnPresetDel=document.getElementById('btn-preset-del'),
+    $attachArea=document.getElementById('attach-area');
 
 FREE_MODELS.forEach(function(m){
   var opt = document.createElement('option');
@@ -212,29 +466,8 @@ $btnCfg.addEventListener('click', function(){ $cfg.classList.toggle('on'); $btnC
 $tmp.addEventListener('input', function(){ $tv.textContent = parseFloat($tmp.value).toFixed(2); save(); });
 $tok.addEventListener('input', function(){ $tkv.textContent = $tok.value; save(); });
 $ms.addEventListener('change', save);
-$sp.addEventListener('input', save);
 $btnMenu.addEventListener('click', function(){ $sb.classList.toggle('on'); $ov.classList.toggle('on'); });
 $ov.addEventListener('click', function(){ $sb.classList.remove('on'); $ov.classList.remove('on'); });
-
-$btnFile.addEventListener('click', function(){ $fIn.click(); });
-$fIn.addEventListener('change', function(e){
-  var files = e.target.files; if(!files.length) return;
-  var loaded = 0;
-  for(var i=0; i<files.length; i++) {
-    (function(f){
-      var r = new FileReader();
-      r.onload = function(evt) {
-        var txt = evt.target.result;
-        $mi.value += ($mi.value ? '\n' : '') + '[File: ' + f.name + ']\n' + txt + '\n[End of ' + f.name + ']\n';
-        $mi.dispatchEvent(new Event('input'));
-        loaded++;
-        if(loaded === files.length) toast('Загружено файлов: '+loaded, 'ok');
-      };
-      r.readAsText(f);
-    })(files[i]);
-  }
-  $fIn.value = '';
-});
 
 $btnLimits.addEventListener('click', function(){
   var m = $ms.value;
@@ -246,24 +479,15 @@ $btnLimits.addEventListener('click', function(){
 });
 
 function parseLimits(h, modelId) {
-  // Выводим в консоль все заголовки, чтобы увидеть, что именно долетает
-  console.log("Все заголовки:", h.getAllResponseHeaders());
-  
   var get = function(p){ return h.getResponseHeader(p); };
-  
-  // Проверяем, есть ли хоть что-то
   var rem = get('x-ratelimit-remaining-requests');
   if(rem) {
     limitsCache[modelId] = {
-      reqLimit: get('x-ratelimit-limit-requests'),
-      reqRem: rem,
+      reqLimit: get('x-ratelimit-limit-requests'), reqRem: rem,
       reqReset: get('x-ratelimit-reset-requests'),
-      tokLimit: get('x-ratelimit-limit-tokens'),
-      tokRem: get('x-ratelimit-remaining-tokens'),
+      tokLimit: get('x-ratelimit-limit-tokens'), tokRem: get('x-ratelimit-remaining-tokens'),
       tokReset: get('x-ratelimit-reset-tokens')
     };
-  } else {
-    console.warn("Заголовки лимитов не найдены. CORS может их скрывать.");
   }
 }
 
@@ -297,7 +521,7 @@ function renderCL() {
 $btnNew.addEventListener('click', newConv);
 $bc.addEventListener('click', function(){
   var c = cur(); if(!c) return;
-  c.msgs = []; c.title = 'Новый чат'; renderCL(); renderChat(); save();
+  c.msgs = []; c.title = 'Новый чат'; attachments = []; renderAttachArea(); renderCL(); renderChat(); save();
 });
 
 function renderChat() {
@@ -334,7 +558,6 @@ function toast(m, type) {
 
 $mi.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); } });
 $bs.addEventListener('click', function(){ if(busy) stopReq(); else sendMsg(); });
-
 $mi.addEventListener('input', function(){
   $mi.style.height = 'auto';
   $mi.style.height = Math.min($mi.scrollHeight, 120) + 'px';
@@ -342,30 +565,80 @@ $mi.addEventListener('input', function(){
 
 function stopReq() { if(xhr){ xhr.abort(); xhr=null; } done(); }
 
+// ─── СБОРКА КОНТЕНТА С ФАЙЛАМИ ─────────────────────────────────────────────
+// Возвращает content для роли user: строка или массив (если есть изображения)
+function buildUserContent(text, files) {
+  if (!files.length) return text;
+
+  var hasImages = files.some(function(a){ return a.isImage; });
+  var textFiles = files.filter(function(a){ return !a.isImage && !a.error; });
+
+  // Текстовые файлы — добавляем прямо в текст сообщения
+  var fullText = text;
+  textFiles.forEach(function(a) {
+    fullText += '\n\n--- Файл: ' + a.name + (a.truncated ? ' [обрезан до ' + MAX_TEXT_CHARS + ' символов]' : '') + ' ---\n' + a.text + '\n--- Конец файла: ' + a.name + ' ---';
+  });
+
+  if (!hasImages) return fullText; // Только текстовые файлы → просто строка
+
+  // Есть изображения — нужен массив content блоков (vision API)
+  var parts = [];
+  if (fullText.trim()) parts.push({ type: 'text', text: fullText });
+  files.filter(function(a){ return a.isImage; }).forEach(function(a) {
+    // b64 в формате data:image/jpeg;base64,XXXX — вытаскиваем чистый base64
+    var match = a.b64.match(/^data:(.+);base64,(.+)$/);
+    if (match) {
+      parts.push({
+        type: 'image_url',
+        image_url: { url: a.b64 } // Groq принимает data URL
+      });
+    }
+  });
+  return parts;
+}
+
 function sendMsg() {
   var key = $ki.value.trim(); if(!key){ toast('Вставьте API ключ', 'err'); return; }
-  var text = $mi.value.trim(); if(!text || busy) return;
+  var text = $mi.value.trim();
+  if((!text && !attachments.length) || busy) return;
 
   var c = cur(); if(!c){ newConv(); c = cur(); }
-  c.msgs.push({ role:'user', content:text });
-  if(c.title === 'Новый чат') c.title = text.slice(0, 30) + (text.length>30?'…':'');
-  
+
+  // Собираем content с учётом файлов
+  var userContent = buildUserContent(text || '', attachments);
+
+  // Для хранения в истории — всегда строка (чтобы не раздувать localStorage картинками)
+  var displayText = text || '';
+  if (attachments.length) {
+    displayText += '\n[📎 ' + attachments.length + ' файл(ов): ' + attachments.map(function(a){ return a.name; }).join(', ') + ']';
+  }
+
+  c.msgs.push({ role:'user', content: displayText });
+  if(c.title === 'Новый чат') c.title = (text || attachments[0].name).slice(0, 30);
+
+  // Сбрасываем ввод
   $mi.value = ''; $mi.style.height = 'auto';
+  var sentAttachments = attachments.slice();
+  attachments = []; renderAttachArea();
   renderCL(); renderChat();
 
   busy = true; $bs.textContent = '■'; $bs.classList.add('stop');
   var ab = addBubble('assistant', '', true);
   var activeModel = $ms.value;
 
+  // Собираем messages для API (история + текущее сообщение с файлами)
   var messages = [];
   var sys = $sp.value.trim(); if(sys) messages.push({ role:'system', content:sys });
-  c.msgs.forEach(function(m){ messages.push({ role:m.role, content:m.content }); });
+  // История без последнего (мы его добавили displayText, но отправим с реальным content)
+  c.msgs.slice(0, -1).forEach(function(m){ messages.push({ role:m.role, content:m.content }); });
+  // Текущее — с файлами
+  messages.push({ role: 'user', content: userContent });
 
   xhr = new XMLHttpRequest();
   xhr.open('POST', 'https://api.groq.com/openai/v1/chat/completions', true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.setRequestHeader('Authorization', 'Bearer ' + key);
-  
+
   xhr.onload = function() {
     parseLimits(xhr, activeModel);
     var res; try{ res = JSON.parse(xhr.responseText); }catch(e){ res={}; }
@@ -379,12 +652,12 @@ function sendMsg() {
     }
     save(); scrollBot(); done();
   };
-  
+
   xhr.onerror = function() {
     ab.innerHTML = '<span style="color:var(--err)">❌ Ошибка сети/CORS. Запусти через локальный сервер или используй GitHub Pages (https).</span>';
     done();
   };
-  
+
   xhr.send(JSON.stringify({
     model: activeModel, messages: messages,
     temperature: parseFloat($tmp.value), max_tokens: parseInt($tok.value), stream: false
@@ -393,7 +666,11 @@ function sendMsg() {
 
 function done() { busy = false; xhr = null; $bs.textContent = '▶'; $bs.classList.remove('stop'); }
 
-load(); updKey();
+// ─── ИНИЦИАЛИЗАЦИЯ ─────────────────────────────────────────────────────────
+load();
+loadPresets();
+renderPresetSelect();
+updKey();
 if(!convs.length) newConv(); else { renderCL(); renderChat(); }
 </script>
 </body>
